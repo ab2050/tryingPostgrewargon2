@@ -33,6 +33,7 @@ def make(name,password,role): #gotta remove the role
 
     cursor.close()
     conn.close()
+    return True
 
 def show():
     conn = create()

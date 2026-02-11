@@ -14,7 +14,6 @@ def existing():
 
 @app.route("/register", methods = ["GET","POST"])
 def newUser():
-
     if request.method == "POST":
         name = request.form["name"]
         password = request.form["password"]
@@ -22,11 +21,10 @@ def newUser():
 
         if adduser:
             return render_template("added.html")
-        
-        if not adduser:
-            return render_template("register.html",error="Username already taken")
 
-        return redirect({url_for("home")})
+        else:
+            return render_template("register.html", error="Username already taken")
+        
     return render_template("register.html")
 
 app.run(debug=True)
