@@ -1,7 +1,7 @@
 import argon2
 from argon2 import PasswordHasher
 
-ph = PasswordHasher() #can edit salt length and all, but don't think its necessary
+ph = PasswordHasher() #can edit salt length and all, but I don't think its necessary
 
 def store(password):
     return ph.hash(password)
