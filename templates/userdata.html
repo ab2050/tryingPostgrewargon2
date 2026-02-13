@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Records</title>
+</head>
+<body>
+
+<h1>User Records</h1>
+
+<table border="1" cellpadding="5">
+
+<tr>
+    <th>Username</th>
+    <th>Password</th>
+    <th>Role</th>
+    <th>Joined At</th>
+    <th>Left At</th>
+</tr>
+
+{% for row in records %}
+<tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[1] }}</td>
+    <td>{{ row[2] }}</td>
+    <td>{{ row[3] }}</td>
+    <td>{{ row[4] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+<a href="{{ url_for('admin') }}">Back to Admin page</a>
+
+</body>
+</html>

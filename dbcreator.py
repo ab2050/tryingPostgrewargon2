@@ -39,27 +39,29 @@ def show():
     conn = create()
     cursor = conn.cursor()
 
-    cursor.execute("select * from storeData")
+    cursor.execute("select username,password,role,join_date,exit_date from storeData")
+    # select * causes the table to be misaligned, like username shows serial number, password shows username, role shows password
+    # and all, need to figure out why
     conn.commit()
-    data = cursor.fetchall() #only cursor.fetchall won't do shit, ask me how i know
-    for data in data: #python has no issue with this apparently
+    #data = cursor.fetchall() #only cursor.fetchall won't do shit, ask me how i know
+    return cursor.fetchall()
+    '''for data in data: #python has no issue with this apparently
         print(data)
-
     cursor.close()
-    conn.close()
+    conn.close()'''
 
 def show_logs():
     conn = create()
     cursor = conn.cursor()
 
     cursor.execute("select * from login_logs")
-    rows = cursor.fetchall()
+    return cursor.fetchall()
 
-    for row in rows:
+    '''for row in rows:
         print(row)
 
     cursor.close()
-    conn.close()
+    conn.close()'''
 
 if __name__ == "__main__":
     #create()
