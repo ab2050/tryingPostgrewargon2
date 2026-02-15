@@ -5,7 +5,8 @@ import adminthings
 
 # username - adm, password - pwd, role - admin
 # database= "abcreates",user = "ab",password = "password"
- 
+
+#user to try redis on - username - user, password - word 
 app = Flask(__name__)
 
 @app.route("/")
@@ -25,6 +26,9 @@ def existing():
         
         elif result == "wrong password":
             return render_template("login.html", error=result)
+        
+        elif result == "locked_2mins":
+            return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
 
         elif result.lower() == "admin":
             return redirect(url_for("admin"))
