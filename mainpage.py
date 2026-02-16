@@ -3,7 +3,9 @@ import login
 from flask import Flask, render_template, request, redirect, url_for
 import adminthings
 from passwordAuth import passwordstrength
-# username - adm, password - pwd, role - admin
+from entryLogs import successlog,faillog
+
+# username - ad, password - pwd, role - admin
 # database= "abcreates",user = "ab",password = "password"
 
 # user to try redis on - username - user, password - word 
@@ -22,16 +24,21 @@ def existing():
         result = login.userlogin(name,password)
 
         if result == "Invalid username":
+            faillog.info(f"Invalid username : {name}")
             return render_template("login.html", error=result)
         
         elif result == "wrong password":
+            faillog.info(f"Invalid password used to access {name}")
             return render_template("login.html", error=result)
         
         elif result == "locked_2mins":
+            faillog.info(f"Multiple failed attempts, lock on user profile {name}")
             return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
 
         elif result.lower() == "admin":
+            successlog.info(f"Successful login")
             return redirect(url_for("admin"))
+        
     return render_template("login.html")
 
 @app.route("/register", methods = ["GET","POST"])
