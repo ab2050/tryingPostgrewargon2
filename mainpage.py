@@ -2,11 +2,11 @@ import register
 import login
 from flask import Flask, render_template, request, redirect, url_for
 import adminthings
-
+from passwordAuth import passwordstrength
 # username - adm, password - pwd, role - admin
 # database= "abcreates",user = "ab",password = "password"
 
-#user to try redis on - username - user, password - word 
+# user to try redis on - username - user, password - word 
 app = Flask(__name__)
 
 @app.route("/")
@@ -39,6 +39,9 @@ def newUser():
     if request.method == "POST":
         name = request.form["name"]
         password = request.form["password"]
+        if passwordstrength(password):
+            return render_template("register.html",error="Password not strong",name=name)
+
         adduser = register.register(name,password)
 
         if adduser:
