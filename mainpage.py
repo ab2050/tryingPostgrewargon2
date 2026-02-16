@@ -39,7 +39,7 @@ def newUser():
     if request.method == "POST":
         name = request.form["name"]
         password = request.form["password"]
-        if passwordstrength(password):
+        if not passwordstrength(password):
             return render_template("register.html",error="Password not strong",name=name)
 
         adduser = register.register(name,password)
