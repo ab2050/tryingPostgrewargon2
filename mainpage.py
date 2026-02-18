@@ -8,7 +8,7 @@ import showgraphs
 from sqliteDBforDeleteReason import add_Reason
 import userActions
 
-# username - ad, password - pwd, role - admin || name - gen password - word role - user
+# username - ad, password - pwd, role - admin || name - gen password - Word123$% role - user
 # database= "abcreates",user = "ab",password = "password"
 
 # NEED TO ADD SESSIONS
@@ -80,6 +80,12 @@ def users():
 @app.route("/admin")
 def admin():
     return render_template("admin.html")
+
+@app.route("/admin/userDeleted")
+def adminUserExitReason():
+    reason = adminthings.showDeleteReasons()
+    auditlog.info(f"Admin viewed deletion reasons from ip {request.remote_addr}")
+    return render_template("delete_reasons.html", reasons=reason)
 
 @app.route("/admin/users")
 def adminusers():
