@@ -1,3 +1,5 @@
+GDPR ALLOWS STORAGE OF IP ADDRESSES BUT ONLY WITH PROPER REASON, INFORMED CONSENT AND WITH PROPER SECURITY ONLY. REMOVE IP FROM LOGS OR CREATE NEW LOG FILES INSTEAD.
+
 Main task : Store data in postgre, 2 user roles - user or admin, admin can see logs and all records
 Failed login attempts get stored in login_logs table
 User records are stored in storeData table
