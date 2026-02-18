@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAIN PAGE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indexCSS.css') }}">
 </head>
 <body>
+    <div class="useractions">
     <img src="{{ url_for('static', filename='face.png') }}" width="200">
     SELECT ONE PLS
-    <a href="/existing">Existing user</a>
-    <a href="/register">New user</a>
+    <a href="{{ url_for('existing') }}">Existing user</a>
+    <a href="{{ url_for('newUser') }}">New user</a>
+    </div>
 </body>
 </html>

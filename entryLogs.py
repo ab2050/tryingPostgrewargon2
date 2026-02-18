@@ -1,4 +1,5 @@
 import logging
+#add all to a data lake ?
 
 successlog = logging.getLogger("successlog")
 successlog.setLevel(logging.INFO)#check moodle for setlevel info details
@@ -14,3 +15,11 @@ faillog.setLevel(logging.INFO)
 failfile = logging.FileHandler("Failed_Logins.log")
 failfile.setFormatter(format)
 faillog.addHandler(failfile)
+
+auditlog = logging.getLogger("auditlog")
+auditlog.setLevel(logging.INFO)
+
+auditfile = logging.FileHandler("Audit.log")
+auditfile.setFormatter(format)
+auditlog.addHandler(auditfile)
+auditlog.info("TEST LOG")

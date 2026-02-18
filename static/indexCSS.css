@@ -1,0 +1,41 @@
+/* Page background */
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.useractions {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    width: 320px;
+}
+
+.useractions img {
+    margin-bottom: 20px;
+}
+
+.useractions {
+    font-size: 18px;
+    font-weight: 400;
+    color: #333;
+}
+
+.useractions a {
+    display: block;
+    margin-top: 15px;
+    padding: 12px;
+    text-decoration: none;
+    border-radius: 8px;
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}

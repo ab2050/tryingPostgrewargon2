@@ -3,7 +3,7 @@ import login
 from flask import Flask, render_template, request, redirect, url_for
 import adminthings
 from passwordAuth import passwordstrength
-from entryLogs import successlog,faillog
+from entryLogs import successlog,faillog,auditlog
 
 # username - ad, password - pwd, role - admin
 # database= "abcreates",user = "ab",password = "password"
@@ -24,18 +24,22 @@ def existing():
         result = login.userlogin(name,password)
 
         if result == "Invalid username":
+            auditlog.info(f"Invalid username attempt from ip : {request.remote_addr}")
             faillog.info(f"Invalid username : {name}")
             return render_template("login.html", error=result)
         
         elif result == "wrong password":
-            faillog.info(f"Invalid password used to access {name}")
+            auditlog.info(f"Invalid password used to access {name} from ip : {request.remote_addr}")
+            faillog.info(f"Invalid password used to access {name} from ip : {request.remote_addr}")
             return render_template("login.html", error=result)
         
         elif result == "locked_2mins":
+            auditlog.info(f"Account {name} locked, multiple failed attempts")
             faillog.info(f"Multiple failed attempts, lock on user profile {name}")
             return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
 
         elif result.lower() == "admin":
+            auditlog.info(f"admin {name} logged in")
             successlog.info(f"Successful login")
             return redirect(url_for("admin"))
         
@@ -52,6 +56,7 @@ def newUser():
         adduser = register.register(name,password)
 
         if adduser:
+            auditlog.info(f"New user {name} added")
             return render_template("added.html")
 
         else:
