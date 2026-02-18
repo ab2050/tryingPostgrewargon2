@@ -4,10 +4,12 @@ from flask import Flask, render_template, request, redirect, url_for
 import adminthings
 from passwordAuth import passwordstrength
 from entryLogs import successlog,faillog,auditlog
+import showgraphs
 
 # username - ad, password - pwd, role - admin
 # database= "abcreates",user = "ab",password = "password"
 
+# NEED TO ADD SESSIONS
 # user to try redis on - username - user, password - word 
 app = Flask(__name__)
 
@@ -77,6 +79,11 @@ def adminusers():
 def adminlogs():
     logs = adminthings.showLogs()
     return render_template("logshow.html",records=logs)
+
+@app.route("/admin/analytics")
+def adminanalytics():
+    graph = showgraphs.analytics()
+    return render_template("analytics.html",data=graph)
 
 app.run(debug=True)
 '''n = input("HI, EXISTING USER (1) OR WANNA CREATE A NEW ONE (2) ? (1/2)")

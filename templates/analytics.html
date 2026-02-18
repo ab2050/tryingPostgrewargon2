@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<h2>New Users Per Day</h2>
+
+<div id="chart"></div>
+
+<script>
+    var graph = JSON.parse('{{ data | safe }}');
+    Plotly.newPlot("chart", graph.data, graph.layout);
+</script>
+</body>
+</html>
