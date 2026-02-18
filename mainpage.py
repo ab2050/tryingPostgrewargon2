@@ -5,8 +5,10 @@ import adminthings
 from passwordAuth import passwordstrength
 from entryLogs import successlog,faillog,auditlog
 import showgraphs
+from sqliteDBforDeleteReason import add_Reason
+import userActions
 
-# username - ad, password - pwd, role - admin
+# username - ad, password - pwd, role - admin || name - gen password - word role - user
 # database= "abcreates",user = "ab",password = "password"
 
 # NEED TO ADD SESSIONS
@@ -45,6 +47,11 @@ def existing():
             successlog.info(f"Successful login")
             return redirect(url_for("admin"))
         
+        elif result.lower() == "user":
+            auditlog.info(f"user {name} has logged in")
+            successlog.info(f"Successful login")
+            return redirect(url_for("users"))
+        
     return render_template("login.html")
 
 @app.route("/register", methods = ["GET","POST"])
@@ -66,6 +73,10 @@ def newUser():
         
     return render_template("register.html")
 
+@app.route("/user")
+def users():
+    return render_template("users.html")
+
 @app.route("/admin")
 def admin():
     return render_template("admin.html")
@@ -84,6 +95,19 @@ def adminlogs():
 def adminanalytics():
     graph = showgraphs.analytics()
     return render_template("analytics.html",data=graph)
+
+@app.route("/delete",methods=["GET","POST"])
+def userDelete():
+    if request.method == "POST":
+        name = request.form["username"]
+        reason = request.form.get("reason", "") # in case user does not give a reason
+
+        auditlog.info(f"User {name} deleted their account")
+        add_Reason(reason)
+        userActions.deleteData(name)
+
+        return render_template("deleted.html")
+    return render_template("delete_account.html")
 
 app.run(debug=True)
 '''n = input("HI, EXISTING USER (1) OR WANNA CREATE A NEW ONE (2) ? (1/2)")

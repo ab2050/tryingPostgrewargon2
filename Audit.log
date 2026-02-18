@@ -9,3 +9,6 @@
 2026-02-18 19:21:20,512 [INFO] admin adm logged in
 2026-02-18 19:22:50,958 [INFO] Invalid username attempt from ip : 127.0.0.1
 2026-02-18 19:22:57,256 [INFO] admin adm logged in
+2026-02-18 21:37:11,611 [INFO] New user gen added
+2026-02-18 21:37:26,138 [INFO] user gen has logged in
+2026-02-18 21:37:50,580 [INFO] User gen deleted their account
