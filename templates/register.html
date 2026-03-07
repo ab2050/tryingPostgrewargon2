@@ -9,6 +9,7 @@
     <img src="{{ url_for('static', filename='registerdog.png') }}" width="200">
     <!-- form WAS DONE BY CHATGPT-->
     <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         {% if error %}
             <p style="color:red;">{{ error }}</p>
         {% endif %}

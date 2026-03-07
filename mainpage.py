@@ -11,6 +11,7 @@ import userActions
 import os
 from dotenv import load_dotenv
 from redisstart import red
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 # username - admintrial, password - Word123$%, role - admin || name - gen password - Word123$% role - user
@@ -23,11 +24,14 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("flaskKey")
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = red #imported from redisstart
+app.config["SESSION_USE_SIGNER"] = True #adds an encrypted sign to prevent tampering
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True #prevents XSS attacks
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax" #prevents CSRF attacks
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax" #prevents BASIC CSRF attacks
+app.config["WTF_CSRF_ENABLED"] = True #better CSRF protection, does not rely on browsers
 
 Session(app)
+csrf = CSRFProtect(app)
 
 @app.route("/")
 def home():
@@ -93,6 +97,9 @@ def newUser():
 
 @app.route("/user")
 def users():
+    if "username" not in session: # session is kinda like a dictionary, checks if the session has a username to avoid 
+        #someone just pasting in the link
+        return redirect(url_for("home"))
     return render_template("users.html")
 
 @app.route("/admin")
@@ -106,29 +113,51 @@ def admin():
 
 @app.route("/admin/userDeleted")
 def adminUserExitReason():
+    if "username" not in session:
+        return redirect(url_for("home"))
+    
+    if session.get("role")!="admin":
+        return render_template("Error403.html"),403
     reason = adminthings.showDeleteReasons()
     auditlog.info(f"Admin viewed deletion reasons from ip {request.remote_addr}")
     return render_template("delete_reasons.html", reasons=reason)
 
 @app.route("/admin/users")
 def adminusers():
+    if "username" not in session:
+        return redirect(url_for("home"))
+    
+    if session.get("role")!="admin":
+        return render_template("Error403.html"),403
     data = adminthings.showData()
     return render_template("userdata.html",records=data)
 
 @app.route("/admin/logs")
 def adminlogs():
+    if "username" not in session:
+        return redirect(url_for("home"))
+    
+    if session.get("role")!="admin":
+        return render_template("Error403.html"),403
     logs = adminthings.showLogs()
     return render_template("logshow.html",records=logs)
 
 @app.route("/admin/analytics")
 def adminanalytics():
+    if "username" not in session:
+        return redirect(url_for("home"))
+    
+    if session.get("role")!="admin":
+        return render_template("Error403.html"),403
     graph = showgraphs.analytics()
     return render_template("analytics.html",data=graph)
 
 @app.route("/delete",methods=["GET","POST"])
 def userDelete():
+    if "username" not in session:
+        return redirect(url_for("home"))
     if request.method == "POST":
-        name = request.form["username"]
+        name = session["username"]
         reason = request.form.get("reason", "") # in case user does not give a reason
 
         auditlog.info(f"User {name} deleted their account")

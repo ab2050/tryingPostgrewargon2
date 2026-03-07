@@ -8,4 +8,4 @@ def register(name,password):
     role = "Admin" #Just to test adminthings.py'''
 
     password = store(password)
-    return dbc.make(name,password,"admin")
+    return dbc.make(name,password,"user")

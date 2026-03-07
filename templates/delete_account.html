@@ -8,7 +8,7 @@
 <h2>Delete Account</h2>
 
 <form method="POST">
-
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label for="username">Username:</label><br>
     <input type="text" id="username" name="username" required><br><br>
 
