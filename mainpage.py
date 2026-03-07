@@ -17,7 +17,8 @@ load_dotenv()
 # username - admintrial, password - Word123$%, role - admin || name - gen password - Word123$% role - user
 # database= "abcreates",user = "ab",password = "password"
 
-# NEED TO ADD SESSIONS
+# NEED TO ADD TALISMAN <- MUST
+# ADD A DICTIONARY FOR ALL ERROR CASES AND USER ROLES IN def exisitng()<- MUST
 # user to try redis on - username - user, password - word 
 
 app = Flask(__name__)
@@ -45,6 +46,7 @@ def existing():
 
         result = login.userlogin(name,password)
 
+        # ADD A DICTIONARY FOR ALL ERROR CASES AND USER ROLES <- MUST
         if result == "Invalid username":
             auditlog.info(f"Invalid username attempt from ip : {request.remote_addr}")
             faillog.info(f"Invalid username : {name}")
@@ -61,6 +63,7 @@ def existing():
             return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
 
         elif result.lower() == "admin":
+            session.clear() #prevents session fixation even though flask generally takes care of it, industry standard practice
             session["username"]=name
             session["role"]="admin"
             auditlog.info(f"admin {name} logged in")
@@ -68,6 +71,7 @@ def existing():
             return redirect(url_for("admin"))
         
         elif result.lower() == "user":
+            session.clear()
             session["username"]=name
             session["role"]="user"
             auditlog.info(f"user {name} has logged in")
