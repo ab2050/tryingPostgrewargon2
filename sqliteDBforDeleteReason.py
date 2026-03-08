@@ -28,5 +28,5 @@ def add_Reason(reason):
     conn.close()
 
 
-"""if __name__ == "__main__":
-    createTableOnlyRunOnce()"""
+if __name__ == "__main__":
+    createTableOnlyRunOnce()

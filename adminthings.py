@@ -11,7 +11,7 @@ def showDeleteReasons():
     conn = get_Connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM Exit_reasons ORDER BY created_at DESC")
+    cursor.execute("SELECT * FROM deletion_reasons ORDER BY created_at DESC")
     reasons = cursor.fetchall()
     cursor.close()
     conn.close()
