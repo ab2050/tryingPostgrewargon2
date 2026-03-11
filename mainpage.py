@@ -15,6 +15,7 @@ from flask_wtf.csrf import CSRFProtect
 import mongoconnect
 import emails
 import otp
+from datetime import timedelta
 #from mongoconnect import patdata
 
 load_dotenv()
@@ -31,13 +32,22 @@ app.config["SECRET_KEY"] = os.getenv("flaskKey")
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = red #imported from redisstart
 app.config["SESSION_USE_SIGNER"] = True #adds an encrypted sign to prevent tampering
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=2)
 app.config["SESSION_COOKIE_HTTPONLY"] = True #prevents XSS attacks
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax" #prevents BASIC CSRF attacks
 app.config["WTF_CSRF_ENABLED"] = True #better CSRF protection, does not rely on browsers
 
 Session(app)
 csrf = CSRFProtect(app)
+
+@app.before_request
+def timeouts():
+    if "username" in session or "mfaname" in session:
+        session.modified = True
+    else:
+        if request.endpoint not in ("home","existing","newUser","static"): #css will break if static not mentioned
+            return render_template("Session_Timedout.html")
 
 @app.route("/")
 def home():
