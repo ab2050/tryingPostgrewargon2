@@ -1,4 +1,4 @@
-import register
+import register #add documentation
 import login
 from flask import Flask, render_template, request, redirect, url_for, session #actually stores data
 from flask_session import Session #where data is stored, redis or user cookies
@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 from redisstart import red
 from flask_wtf.csrf import CSRFProtect
 import mongoconnect
+import emails
+import otp
 #from mongoconnect import patdata
 
 load_dotenv()
@@ -64,9 +66,22 @@ def existing():
             auditlog.info(f"Account {name} locked, multiple failed attempts")
             faillog.info(f"Multiple failed attempts, lock on user profile {name}")
             return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
+        
+        else:
+            session.clear() # prevents session fixation attacks,although flask usually does so by itself
+            usermail = login.useremail(name)
+            code = otp.createOTP(name)
+            emails.sendmail(usermail,"Trying out flask logins",f"pyotp generated code is {code}")
+            session["mfaname"]=name
+            session["mfarole"]=result.lower()
+            auditlog.info(f"otp sent to {result.lower()} {name}")
+            return redirect(url_for("mfa"))
 
-        elif result.lower() == "admin":
+        '''elif result.lower() == "admin":
             session.clear() #prevents session fixation even though flask generally takes care of it, industry standard practice
+            usermail = login.useremail()
+            code = otp.createOTP(name)
+            emails.sendmail(usermail,"Trying out flask logins",f"pyotp generated code is {code}")
             session["username"]=name
             session["role"]="admin"
             auditlog.info(f"admin {name} logged in")
@@ -87,19 +102,59 @@ def existing():
             session["role"]="medical"
             auditlog.info(f"Medical staff {name} logged in")
             successlog.info(f"Successful login")
-            return redirect(url_for("medic"))
+            return redirect(url_for("medic"))'''
         
     return render_template("login.html")
+
+@app.route("/mfa", methods=["GET","POST"])
+def mfa():
+    if "mfaname" not in session:
+        return redirect(url_for("home"))
+    
+    if request.method == "POST":
+        iotp = request.form["otp"]
+        validity = otp.verify(session["mfaname"],iotp)
+        name = session["mfaname"]
+        role = session["mfarole"]
+
+        if validity=="correct":
+            session.pop("mfaname")
+            session.pop("mfarole")
+            session["username"]=name
+            session["role"]=role
+            auditlog.info(f"{session["role"]} {session["username"]} verified MFA")
+
+            if role=="admin":     
+                successlog.info(f"Successful login")
+                return redirect(url_for("admin"))  
+
+            elif role=="user":
+                successlog.info(f"Successful login")
+                return redirect(url_for("users"))
+            
+            elif role=="medical":
+                successlog.info(f"Successful login")
+                return redirect(url_for("medic"))
+            
+        elif validity=="timedout":
+            return render_template("mfa.html",error="Timed out, please re-login")
+        elif validity=="wrong":
+            return render_template("mfa.html",error= "Wrong otp")
+    return render_template("mfa.html")
 
 @app.route("/register", methods = ["GET","POST"])
 def newUser():
     if request.method == "POST":
         name = request.form["name"]
         password = request.form["password"]
+        mail=request.form["email"]
+
+        if not emails.verifymail(mail):
+            return render_template("register.html",error="Wrong email format",name=name)
         if not passwordstrength(password):
             return render_template("register.html",error="Password not strong",name=name)
 
-        adduser = register.register(name,password)
+        adduser = register.register(name,password,mail)
 
         if adduser:
             auditlog.info(f"New user {name} added")
@@ -119,7 +174,7 @@ def users():
 
 @app.route("/user/upload", methods=["GET","POST"])
 def userAddsData():
-    if "username" not in session or session.get("role") !="user":
+    if "username" not in session or session.get("role") !="user": #show flash message
         return redirect(url_for("home")),403
     
     if request.method== "POST":

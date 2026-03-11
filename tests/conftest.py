@@ -2,7 +2,7 @@ import pytest
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) #will break if you don't mention path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) #will break if path isn't mentioned
 from mainpage import app #won't find mainpage otherwise
 @pytest.fixture
 def client():

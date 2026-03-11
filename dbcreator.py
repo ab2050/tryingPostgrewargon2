@@ -20,14 +20,14 @@ def makeTables():
     cursor.close() #must in this very order, closing conn should automatically close cursor, but gotta be professional
     conn.close()
 
-def make(name,password,role): #gotta remove the role
+def make(name,password,mail,role): #gotta remove the role
     conn = create()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM storeData where username = %s",(name,))
     if cursor.fetchone():
         return False
 
-    cursor.execute("INSERT INTO storeData (username, password, role) VALUES (%s, %s, %s)",(name, password, role))
+    cursor.execute("INSERT INTO storeData (username, password, email,role) VALUES (%s,%s,%s,%s)",(name,password, mail, role))
     conn.commit() #use try catch in case same name comes in (will change primary key later if the weather is nice)
     print("User has been added")
 

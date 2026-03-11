@@ -47,3 +47,12 @@ def userlogin(name,password):
             return "wrong password"
 
             #probably should add a name == main
+
+def useremail(username):
+    conn = dbc.create()
+    cursor = conn.cursor()
+    cursor.execute("SELECT email from storeData where username = %s",(username,))
+    mail = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return mail[0]

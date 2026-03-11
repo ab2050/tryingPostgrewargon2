@@ -1,6 +1,8 @@
 import pytest
 from passwordAuth import store,verify,passwordstrength
 
+# cd LTU_TERMS/SecureSWDev/argon2withpostgre
+
 pwd = "Abcd!1234"
 def test_store():
     testhash = store(pwd)

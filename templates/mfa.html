@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP</title>
+</head>
+<body>
+    <h2>Two-Factor Authentication</h2>
+    <p>An OTP has been sent to your registered email. Valid for 3 minutes.</p>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Enter OTP</label>
+        <input type="text" name="otp" maxlength="6" required autofocus>
+        <br><br>
+        <button type="submit">Verify</button>
+    </form>
+
+    <br><br>
+    <a href="{{ url_for('existing') }}">Login again</a>
+    <br><br>
+    <a href="{{ url_for('home') }}">Home</a>
+</body>
+</html>
