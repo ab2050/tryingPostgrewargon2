@@ -24,7 +24,7 @@ def checkpasswordleaked(password):
     sha = hashlib.sha1(password.encode()).hexdigest().upper()
     prefix = sha[:5]
     suffix = sha[5:]
-    check = httpx.get(f"https://api.pwnedpasswords.com/range/{prefix}")
+    check = httpx.get(f"https://api.pwnedpasswords.com/range/{prefix}") #k-anonymity concept, only sending the first 5 letters
     hashes = (line.split(":") for line in check.text.splitlines())
     for hash,count in hashes:
         if hash == suffix: #api will only return hashes that have the same first 5 that we sent

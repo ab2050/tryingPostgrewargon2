@@ -50,7 +50,7 @@ def timeouts():
     if "username" in session or "mfaname" in session:
         session.modified = True
     else:
-        if request.endpoint not in ("home","existing","newUser","static"): #css will break if static not mentioned
+        if request.endpoint not in ("home","existing","newUser","static","verifyEmail"): #css will break if static not mentioned
             return render_template("Session_Timedout.html")
 
 @app.route("/")
@@ -174,17 +174,32 @@ def newUser():
         
         if not passwordAuth.passwordstrength(password):
             return render_template("register.html",error="Password not strong",name=name)
+        
+        token = emails.createToken(name,password,mail)
+        link = url_for("verifyEmail",token=token,_external=True)
+        emails.sendmail(mail,"Gotta verify",f"My own university trial so click on {link}")
+        auditlog.info(f"Verification email sent to {name}")
+        return render_template("register.html",message="check email, click link",name=name)
 
-        adduser = register.register(name,password,mail)
+        '''adduser = register.register(name,password,mail)
 
         if adduser:
             auditlog.info(f"New user {name} added")
             return render_template("added.html")
 
         else:
-            return render_template("register.html", error="Username already taken")
+            return render_template("register.html", error="Username already taken")'''
         
     return render_template("register.html")
+
+@app.route("/verify/<token>")
+def verifyEmail(token):
+    data = emails.verifyToken(token)
+    if data:
+        register.register(data["username"],data["password"],data["email"])
+        auditlog.info(f"{data["username"]} account created")
+        return render_template("verified.html",message="Your email has been verified, welcome aboard !")
+    return render_template("verified.html",error="Invalid link")
 
 @app.route("/user")
 def users():
