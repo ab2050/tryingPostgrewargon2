@@ -166,8 +166,14 @@ def newUser():
         password = request.form["password"]
         mail=request.form["email"]
 
+        if not passwordAuth.usernamevalid(name):
+            return render_template("register.html",error="Wrong username format")
+
         if not emails.verifymail(mail):
             return render_template("register.html",error="Wrong email format",name=name)
+        
+        if passwordAuth.usernameBlacklist(name):
+            return render_template("register.html",error="Profanities are not allowed")
         
         if passwordAuth.checkpasswordleaked(password):
             return render_template("register.html",error="Password has already been breached",name=name)

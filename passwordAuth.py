@@ -3,6 +3,7 @@ from argon2 import PasswordHasher
 import re
 import httpx
 import hashlib
+from better_profanity import profanity
 
 ph = PasswordHasher() #can edit salt length and all, but I don't think its necessary
 
@@ -30,3 +31,10 @@ def checkpasswordleaked(password):
         if hash == suffix: #api will only return hashes that have the same first 5 that we sent
             return True
     return False        
+
+def usernamevalid(username):
+    pattern = r"^[a-zA-Z0-9_]{3,20}$"
+    return re.match(pattern,username) is not None
+
+def usernameBlacklist(username):
+    return profanity.contains_profanity(username)
