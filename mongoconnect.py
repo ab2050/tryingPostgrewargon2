@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from bson.objectid import ObjectId # binary JSON, needed to decode mongoDB object ids
 import atexit
+from encryption import encrypt, decrypt
 
 load_dotenv()
 user = os.getenv("mongouser")
@@ -37,16 +38,28 @@ def medAddsData(data):
         {"_id":data.get("username")},
         {
             "$set":{
-                "disease":data.get("disease"),
-                "medicines":data.get("medicines"),
-                "notes":data.get("notes"),
+                "disease":encrypt(data.get("disease")),
+                "medicines":encrypt(data.get("medicines")),
+                "notes":encrypt(data.get("notes")),
                 "updatedOn":datetime.now()
             }
-        }
-    )
+        },upsert=True)
 
 def showpatients():
-    return list(patdata.find())
+    patients =  list(patdata.find())
+    for patient in patients:
+        patient["disease"] = decrypt(patient.get("disease"))
+        patient["medicines"] = decrypt(patient.get("medicines"))
+        patient["notes"] = decrypt(patient.get("notes"))
+    return patients
 
 def individual(username):
-    return patdata.find_one({"_id":username})
+    ipatient =  patdata.find_one({"_id":username})
+    if ipatient:
+        ipatient["disease"] = decrypt(ipatient.get("disease"))
+        ipatient["medicines"] = decrypt(ipatient.get("medicines"))
+        ipatient["notes"] = decrypt(ipatient.get("notes"))
+    return ipatient
+
+def checkencryption():
+    return list(patdata.find())

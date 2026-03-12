@@ -82,6 +82,22 @@ def existing():
             faillog.info(f"Multiple failed attempts, lock on user profile {name}")
             return render_template("login.html",error = "Too many failed attempts, retry after 2 mins")
         
+        elif result.lower()=="medical":
+            session.clear()
+            session["username"]=name
+            session["role"]="medical"
+            auditlog.info(f"Medical staff {name} logged in")
+            successlog.info(f"Successful login")
+            return redirect(url_for("medic"))
+        
+        elif result.lower() == "user":
+            session.clear()
+            session["username"]=name
+            session["role"]="user"
+            auditlog.info(f"user {name} has logged in")
+            successlog.info(f"Successful login")
+            return redirect(url_for("users"))
+        
         else:
             session.clear() # prevents session fixation attacks,although flask usually does so by itself
             usermail = login.useremail(name)
@@ -309,6 +325,14 @@ def medViewsData():
         return redirect(url_for("home"))
     
     records = mongoconnect.showpatients()
+    return render_template("Med_Views_data.html",record=records)
+
+@app.route("/medic/testview")
+def medtest():
+    if "username" not in session or session.get("role") != "medical":
+        return redirect(url_for("home"))
+    
+    records = mongoconnect.checkencryption()
     return render_template("Med_Views_data.html",record=records)
 
 @app.route("/delete",methods=["GET","POST"])
