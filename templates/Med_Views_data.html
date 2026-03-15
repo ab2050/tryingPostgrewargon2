@@ -3,57 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
     <title>All Patient Records</title>
 </head>
 <body>
-
     <h2>All Patient Records</h2>
 
-    {% if record %}
-
-    <table border="1">
-
-    <tr>
-        <th>Name</th>
-        <th>Age</th>
-        <th>Disease</th>
-        <th>Medicines</th>
-        <th>Notes</th>
-    </tr>
-
-    {% for i in record %}
-
-    <tr>
-        <td>{{ i.name }}</td>
-        <td>{{ i.age }}</td>
-        <td>{{ i.disease }}</td>
-        <td>{{ i.medicines }}</td>
-        <td>{{ i.notes }}</td>
-    </tr>
-
-    {% endfor %}
-
-    </table>
-
-    {% else %}
-
-    <p>No patient records found.</p>
-
-    {% endif %}
+    <div id="records"></div>
+    <p id="error" style="color:red;"></p>
 
     <br>
     <a href="{{ url_for('medic') }}">Back</a>
     <br><br>
-    <a href="{{ url_for('logout')}}">Log out</a>
+    <a href="{{ url_for('logout') }}">Log out</a>
 
-</body>
-</html>
+    <script>
+        async function patientdata() 
+        {
+            const a = await fetch("/api/medic/view")
+            const data = await a.json()
+
+            const doc = document.getElementById("records")
+            let table = "<table border='1'><tr><th>Username</th><th>Disease</th><th>Medicines</th><th>Notes</th></tr>"
+            data.records.forEach(r => {table += `<tr><td>${r._id}</td><td>${r.disease || "N/A"}</td><td>${r.medicines || "N/A"}</td>
+                <td>${r.notes || "N/A"}</td></tr>`})
+            table += "</table>"
+            doc.innerHTML = table
+            
+        }
+        patientdata()
+    </script>
 </body>
 </html>

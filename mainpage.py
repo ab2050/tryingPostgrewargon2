@@ -1,6 +1,6 @@
 import register # to allow new users to register, gets register method which hashes password and stores data in postgresql
 import login # imports userlogin which verifies password hash, useremail to get user email for MFA
-from flask import Flask, render_template, request, redirect, url_for, session, Response #actually stores data
+from flask import Flask, render_template, request, redirect, url_for, session, Response, jsonify #actually stores data
 from flask_session import Session #where data is stored, redis or user cookies
 import adminthings #admin funcitionalities like show logs, show delete reasons,among others
 import passwordAuth #to ensure new users' passwords are strong
@@ -414,9 +414,21 @@ def medEditsData():
 def medViewsData():
     if "username" not in session or session.get("role") != "medical":
         return redirect(url_for("home"))
+    return render_template("Med_Views_data.html")
+
+@app.route("/api/medic/view")
+def apimedViewsData():
+    if "username" not in session or session.get("role") != "medical":
+        return redirect(url_for("home"))
     
     records = mongoconnect.showpatients()
-    return render_template("Med_Views_data.html",record=records)
+    for r in records:
+        r["_id"] = str(r["_id"])
+        r["createdOn"] = str(r["createdOn"])
+        if r.get("updatedOn"):
+            r["updatedOn"] = str(r["updatedOn"])
+    #return render_template("Med_Views_data.html",record=records)
+    return jsonify({"success":True,"records":records})
 
 @app.route("/medic/testview")
 def medtest():
@@ -425,7 +437,7 @@ def medtest():
     
     records = mongoconnect.checkencryption()
     return render_template("Med_Views_data.html",record=records)
-
+    
 @app.route("/delete",methods=["GET","POST"])
 def userDelete():
     if "username" not in session:
